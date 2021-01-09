@@ -1,0 +1,1 @@
+CREATE TABLE evento(content jsonb);
