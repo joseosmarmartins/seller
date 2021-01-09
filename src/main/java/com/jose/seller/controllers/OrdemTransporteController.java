@@ -17,7 +17,13 @@ public class OrdemTransporteController {
     }
 
     @GetMapping
-    public List<OrdemTransporte> getPedidosValorTotalMaiorIgualQuinhentos() {
+    public List<OrdemTransporte> get() {
         return ordemTransporteService.get();
+    }
+
+    // Passando só o ID mesmo a chamada sendo Patch, pois o status está sendo definido diretamente no método do Service
+    @PatchMapping("{id}")
+    public void iniciarTransporte(@PathVariable("id") Long id) {
+        ordemTransporteService.iniciarTransporte(id);
     }
 }

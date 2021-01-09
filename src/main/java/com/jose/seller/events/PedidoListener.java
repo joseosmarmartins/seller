@@ -43,7 +43,7 @@ public class PedidoListener {
     private void criarOrdemTransporte(Pedido pedido) {
         OrdemTransporte ordemTransporte = new OrdemTransporte();
         ordemTransporte.setPedido(pedido);
-        ordemTransporte.setStatus("DONE");
+        ordemTransporte.setStatus("PENDING");
 
         ordemTransporteService.salvar(ordemTransporte);
     }

@@ -22,6 +22,13 @@ public class OrdemTransporteService {
         return iOrdemTransporteRepository.save(ordemTransporte).getId();
     }
 
+    public void iniciarTransporte(Long ordemTransporteId) {
+        OrdemTransporte ordemTransporte = iOrdemTransporteRepository.getOne(ordemTransporteId);
+        ordemTransporte.setStatus("INITIALIZED");
+
+        iOrdemTransporteRepository.save(ordemTransporte);
+    }
+
     public List<OrdemTransporte> get() {
         return iOrdemTransporteRepository.findAll();
     }
