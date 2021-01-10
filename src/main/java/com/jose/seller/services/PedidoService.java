@@ -42,7 +42,11 @@ public class PedidoService {
             throw new NegocioException(e.getMessage());
         }
 
-        rabbitTemplate.convertAndSend(this.queue.getName(), pedido.getId() + "");
+        final String pedidoId = pedido.getId() + "";
+        rabbitTemplate.convertAndSend(this.queue.getName(), pedidoId, m -> {
+            m.getMessageProperties().setCorrelationId(pedidoId);
+            return m;
+        });
 
         return pedido.getId();
     }

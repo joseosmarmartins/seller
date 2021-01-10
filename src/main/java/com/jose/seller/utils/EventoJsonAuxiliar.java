@@ -12,6 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class EventoJsonAuxiliar implements Serializable {
 
+    private String correlationId;
     private Date data;
     private String descricao;
     private Boolean sucesso;

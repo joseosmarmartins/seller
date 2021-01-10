@@ -8,6 +8,8 @@ import com.jose.seller.services.OrdemTransporteService;
 import com.jose.seller.services.PedidoService;
 import com.jose.seller.utils.EventoJsonAuxiliar;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.support.AmqpHeaders;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
@@ -27,17 +29,17 @@ public class PedidoListener {
     }
 
     @RabbitListener(queues = {"${fila.pedido.nome}"})
-    public void pedidoCriado(@Payload String pedidoId) {
+    public void pedidoCriado(@Payload String pedidoId, @Header(AmqpHeaders.CORRELATION_ID) String correlationId) {
         try {
             Pedido pedido = pedidoService.getPorId(Long.valueOf(pedidoId));
 
             criarOrdemTransporte(pedido);
         } catch (Exception e) {
-            salvaEventoErro(e.getMessage());
+            salvaEventoErro(e.getMessage(), correlationId);
             return;
         }
 
-        salvaEventoSucesso("Ordem de transporte criada com sucesso!");
+        salvaEventoSucesso("Ordem de transporte criada com sucesso!", correlationId);
     }
 
     private void criarOrdemTransporte(Pedido pedido) {
@@ -48,17 +50,17 @@ public class PedidoListener {
         ordemTransporteService.salvar(ordemTransporte);
     }
 
-    private void salvaEventoSucesso(String message) {
+    private void salvaEventoSucesso(String message, String correlationId) {
         Evento evento = new Evento();
-        EventoJsonAuxiliar auxiliar = new EventoJsonAuxiliar(new Date(), message, true);
+        EventoJsonAuxiliar auxiliar = new EventoJsonAuxiliar(correlationId, new Date(), message, true);
         evento.setEventoJsonAuxiliar(auxiliar);
 
         eventoService.salvar(evento);
     }
 
-    private void salvaEventoErro(String message) {
+    private void salvaEventoErro(String message, String correlationId) {
         Evento evento = new Evento();
-        EventoJsonAuxiliar auxiliar = new EventoJsonAuxiliar(new Date(), message, false);
+        EventoJsonAuxiliar auxiliar = new EventoJsonAuxiliar(correlationId, new Date(), message, false);
         evento.setEventoJsonAuxiliar(auxiliar);
 
         eventoService.salvar(evento);
